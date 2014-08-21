@@ -16,14 +16,14 @@
 }
 
 .label {
-  font: 30px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 20px "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-anchor: middle;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
 
 }
 
 .label--leaf {
-  font: 20px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 10px "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-anchor: middle;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff; 
 }
@@ -47,10 +47,12 @@
   <div class="chart-container"></div>
 </body>
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
 
 var margin = 20,
-    diameter = 960;
+    diameter = 960,
+    format = d3.format(",d");
 
 var color = d3.scale.linear()
     .domain([-1, 5])
@@ -90,9 +92,11 @@ function renderChart(root) {
       .attr("class", function(d) {
         return d.children ? "label" : "label--leaf";
       })
-      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
-      .style("display", function(d) { return d.parent === root ? null : "none"; })
-      .text(function(d) { return d.name; });
+      .attr("dy", "0.3em")
+      // .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+      // .style("display", function(d) { return d.parent === root ? null : "none"; })
+      .text(function(d) { return d.name + "<br>" + format(d.size); })
+      .call(wrap);
 
   var node = svg.selectAll("circle,text");
 
@@ -125,6 +129,40 @@ function renderChart(root) {
     circle.attr("r", function(d) { return d.r * k; });
   }
 };
+
+function wrap(text) {
+  text.each(function() {
+    var text = d3.select(this),
+        textSize = textWidth(text.text().split(/<br>/)[0]),
+        words = text.text().split(/<br>/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 0.5, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");     
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > textSize) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+};
+
+function textWidth(text) {
+   var dummyHtmlElem = '<span style="display:none">' + text + '</span>';
+   $('body').append(dummyHtmlElem);
+   var width = $('body').find('span:last').width();
+   $('body').find('span:last').remove();
+   return width;
+};
+
 
 function prepAndRenderChart(filters){
   $.getJSON( url, function( data ) {

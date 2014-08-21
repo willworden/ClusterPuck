@@ -170,7 +170,7 @@ function renderChart(root) {
       })
       .attr("dy", "0.3em")
       .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
-      .style("display", function(d) { return d.parent === root ? d.children === root ? null : "none" : "none"; })
+      // .style("display", function(d) { return d.parent === root ? d.children === root ? "inline" : "inline" : "inline"; })
       .text(function(d) { return d.name + (isNaN(d.size) || d.size === undefined ? "" : "<br>" + format(d.size)); })
       .call(wrap);
 
@@ -208,7 +208,7 @@ function renderChart(root) {
           if (d.parent === focus) {
                this.style.display = "inline";  
                this.style.font = "20px Helvetica Neue, Helvetica, Arial, sans-serif";
-               this.style.stroke = "red";
+               // this.style.stroke = "red";
 
         // bad hack
         var textValue = d.name + (isNaN(d.size) || d.size === undefined ? "" : "<br>" + format(d.size));

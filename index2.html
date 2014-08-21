@@ -78,10 +78,13 @@ body {
 </body>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="tipsy.js"></script>
+<link rel="stylesheet" type="text/css" href="tipsy.css">
 <script>
 
 var margin = 20,
     diameter = 960,
+    colors = d3.scale.category20(),
     format = d3.format(",d");
 
 var screenWidth = $(window).width()-50;
@@ -166,9 +169,9 @@ function renderChart(root) {
         return d.children ? "label" : "label--leaf";
       })
       .attr("dy", "0.3em")
-      // .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
-      // .style("display", function(d) { return d.parent === root ? null : "none"; })
-      .text(function(d) { return d.name + "<br>" + format(d.size); })
+      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+      .style("display", function(d) { return d.parent === root ? d.children === root ? null : "none" : "none"; })
+      .text(function(d) { return d.name + (isNaN(d.size) || d.size === undefined ? "" : "<br>" + format(d.size)); })
       .call(wrap);
 
   var node = svg.selectAll("circle,text");
@@ -178,6 +181,15 @@ function renderChart(root) {
       .on("click", function() { zoom(root); });
 
   zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+  $('svg circle').tipsy({ 
+        gravity: 'w', 
+        html: true, 
+        title: function() {
+          var d = this.__data__, c = colors(d.i);
+          return '<span style="color:' + c + '">' + d.name + '</span>'; 
+        }
+      });
 
   function zoom(d) {
     var focus0 = focus; focus = d;
@@ -192,7 +204,40 @@ function renderChart(root) {
     transition.selectAll("text")
       .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
         .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-        .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+        .each("start", function(d) { 
+          if (d.parent === focus) {
+               this.style.display = "inline";  
+               this.style.font = "20px Helvetica Neue, Helvetica, Arial, sans-serif";
+               this.style.stroke = "red";
+
+        // bad hack
+        var textValue = d.name + (isNaN(d.size) || d.size === undefined ? "" : "<br>" + format(d.size));
+        var text = d3.select(this),
+        textSize = textWidth(textValue.split(/<br>/)[0]),
+        words = textValue.split(/<br>/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 0.5, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");    
+    
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          console.log(tspan.node().getComputedTextLength());
+          if (tspan.node().getComputedTextLength() > textSize) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+          }
+        }
+    // bad hack
+             }
+        })
+        .attr("class", function(d) { return d.parent === focus ? "parent--focused" : "not-focused"; })
         .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
   }
 

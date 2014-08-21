@@ -67,6 +67,130 @@
           ]
         }
       ]
-    }    
+    },  
+    {
+      "name": "cluster2",
+      "children": [
+        {
+          "name": "FavoriteFood",
+          "children": [
+            { "name": "Kebab", "size": 1230 },
+            { "name": "Shawarma", "size": 610 },
+            { "name": "Turkish Salad", "size": 2 }
+          ]
+        },
+        {
+          "name": "Education",
+          "children": [
+            { "name": "Highschool", "size": 600 },
+            { "name": "College", "size": 409 },
+            { "name": "University", "size": 79 },
+            { "name": "Postgrad", "size": 107 }
+          ]
+        },
+        {
+          "name": "Age",
+          "children": [
+            { "name": "below 25", "size": 46 },
+            { "name": "26 to 35", "size": 191 },
+            { "name": "36 to 45", "size": 84 },
+            { "name": "46 to 55", "size": 8 }
+          ]
+        }
+      ]
+    },    
+    {
+      "name": "cluster4",
+      "children": [
+        {
+          "name": "FavoriteFood",
+          "children": [
+            { "name": "Kebab", "size": 1230 },
+            { "name": "Shawarma", "size": 610 },
+            { "name": "Turkish Salad", "size": 2 }
+          ]
+        },
+        {
+          "name": "Education",
+          "children": [
+            { "name": "Highschool", "size": 600 },
+            { "name": "College", "size": 409 },
+            { "name": "University", "size": 79 },
+            { "name": "Postgrad", "size": 107 }
+          ]
+        },
+        {
+          "name": "Age",
+          "children": [
+            { "name": "below 25", "size": 46 },
+            { "name": "26 to 35", "size": 191 },
+            { "name": "36 to 45", "size": 84 },
+            { "name": "46 to 55", "size": 8 }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cluster2",
+      "children": [
+        {
+          "name": "FavoriteFood",
+          "children": [
+            { "name": "Kebab", "size": 1230 },
+            { "name": "Shawarma", "size": 610 },
+            { "name": "Turkish Salad", "size": 2 }
+          ]
+        },
+        {
+          "name": "Education",
+          "children": [
+            { "name": "Highschool", "size": 600 },
+            { "name": "College", "size": 409 },
+            { "name": "University", "size": 79 },
+            { "name": "Postgrad", "size": 107 }
+          ]
+        },
+        {
+          "name": "Age",
+          "children": [
+            { "name": "below 25", "size": 46 },
+            { "name": "26 to 35", "size": 191 },
+            { "name": "36 to 45", "size": 84 },
+            { "name": "46 to 55", "size": 8 }
+          ]
+        }
+      ]
+    },    
+    {
+      "name": "cluster2",
+      "children": [
+        {
+          "name": "FavoriteFood",
+          "children": [
+            { "name": "Kebab", "size": 1230 },
+            { "name": "Shawarma", "size": 610 },
+            { "name": "Greek Salad", "size": 550 }
+          ]
+        },
+        {
+          "name": "Education",
+          "children": [
+            { "name": "Highschool", "size": 600 },
+            { "name": "College", "size": 409 },
+            { "name": "University", "size": 79 },
+            { "name": "Postgrad", "size": 107 }
+          ]
+        },
+        {
+          "name": "Age",
+          "children": [
+            { "name": "below 25", "size": 46 },
+            { "name": "26 to 35", "size": 191 },
+            { "name": "36 to 45", "size": 84 },
+            { "name": "46 to 55", "size": 8 }
+          ]
+        }
+      ]
+    }      
   ]
 }

@@ -41,8 +41,7 @@
 
 <body>
   <div class="filter-container">
-    Filter by: <input class="filter-text" type="text"></input>
-    <input class="filter-button" type="button" value="Submit" />
+
   </div>
   <div class="chart-container"></div>
 </body>
@@ -66,7 +65,39 @@ var pack = d3.layout.pack()
 
 var url = "flare3.js"; //"http://localhost:3000/data/demo.json";
 
+function buildMenu(root){
+  var form = document.createElement("div");
+  var dictionary={};
+  var clusters = root.children;
+  clusters.forEach(function (cluster){
+    cluster.children.forEach(function(variable){
+        dictionary[variable.name] = variable.name;
+      });
+
+  });
+  for(key in dictionary){
+    var menuBox = document.createElement("input");
+    var label = document.createElement("label");
+    menuBox.type="checkbox";
+    menuBox.id="checkbox_for_"+key
+    menuBox.value=key;
+    label.setAttribute("for", "checkbox_for_"+key);
+    label.innerHTML = key;
+    form.appendChild(menuBox);
+    form.appendChild(label);
+
+  }
+  var button = document.createElement("button");
+  button.className ="filter-button";
+  button.innerHTML="Submit Filter";
+  form.appendChild(button)
+  $(".filter-container div").remove();
+  $(".filter-container").append(form);
+}
+
 function renderChart(root) {
+  console.log(root);
+
   d3.select("svg").remove();
 
   var svg = d3.select(".chart-container").append("svg")
@@ -125,7 +156,7 @@ function renderChart(root) {
 
   function zoomTo(v) {
     var k = diameter / v[2]; view = v;
-    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+    node.transition().delay(250).duration(700).attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
     circle.attr("r", function(d) { return d.r * k; });
   }
 };
@@ -171,14 +202,14 @@ function prepAndRenderChart(filters){
      renderChart(prepData(data, filters));
      return;
     }
-
+    buildMenu(data);
     renderChart(data);
   });
 }
 
 function prepData(data, filters){
   var matchedClusters = [];
-
+  console.log("filters:" + filters);
   if(data.children) {
      data.children.forEach(function(cluster) {
        var isMatch = false;
@@ -219,10 +250,16 @@ function isMatchFilter(variable, filters) {
 
 d3.select(self.frameElement).style("height", diameter + "px");
 
-$(".filter-button").on("click", function() {
-  var filterText = $(".filter-text").val();
-  var values = filterText.split(",");
+$("body").on("click", ".filter-button", function() {
+  var checked = $( "input:checked" );
+  var values = [];
+  checked.each(function(i) {
+     values.push($(this).val());
+  });
+
   console.log(values);
+ // values = values.substring(0, values.length - 1);
+
   if(values.length>0 && values[0] != ""){
     console.log("rendering filters");
     prepAndRenderChart(values);
@@ -230,8 +267,9 @@ $(".filter-button").on("click", function() {
   else{
     prepAndRenderChart("");
   }
+ 
 });
 
-prepAndRenderChart();
+prepAndRenderChart("");
 
 </script>

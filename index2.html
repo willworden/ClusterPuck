@@ -2,6 +2,10 @@
 <meta charset="utf-8">
 <style>
 
+body {
+  text-align: center;
+}
+
 .node {
   cursor: pointer;
 }
@@ -13,6 +17,33 @@
 
 .node--leaf {
   fill: white;
+}
+
+.filter-container{
+
+  margin: 0 auto;
+  font: 20px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+  height:auto;
+  display:inline-block;
+  border: 2px solid #ccc;
+  padding: 4px 10px 4px 10px;
+}
+
+.filter-container input[type="checkbox"] {
+  margin-left: 18px;
+  display: inline-block;
+}
+
+.filter-button, .filter-clear-button {
+  margin-left: 20px;
+  display: inline-block;  
+   font: 18px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.filter-clear-button {
+  margin-left: 6px;
 }
 
 .label {
@@ -53,9 +84,11 @@ var margin = 20,
     diameter = 960,
     format = d3.format(",d");
 
+var screenWidth = $(window).width()-50;
+
 var color = d3.scale.linear()
     .domain([-1, 5])
-    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+    .range(["hsl(180,80%,80%)", "hsl(228,30%,40%)"])
     .interpolate(d3.interpolateHcl);
 
 var pack = d3.layout.pack()
@@ -87,10 +120,17 @@ function buildMenu(root){
     form.appendChild(label);
 
   }
+
   var button = document.createElement("button");
   button.className ="filter-button";
-  button.innerHTML="Submit Filter";
+  button.innerHTML="submit";
   form.appendChild(button)
+
+  var clearButton = document.createElement("button");
+  clearButton.className ="filter-clear-button";
+  clearButton.innerHTML="clear";
+  form.appendChild(clearButton)
+
   $(".filter-container div").remove();
   $(".filter-container").append(form);
 }
@@ -100,11 +140,13 @@ function renderChart(root) {
 
   d3.select("svg").remove();
 
+  var svgWidth = (diameter > screenWidth ? diameter : screenWidth );
+
   var svg = d3.select(".chart-container").append("svg")
-      .attr("width", diameter)
+      .attr("width", svgWidth)
       .attr("height", diameter)
     .append("g")
-      .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+      .attr("transform", "translate(" + svgWidth / 2 + "," + diameter / 2 + ")");
 
   var focus = root,
       nodes = pack.nodes(root),
@@ -132,7 +174,7 @@ function renderChart(root) {
   var node = svg.selectAll("circle,text");
 
   d3.select(".chart-container")
-      .style("background", color(-1))
+      .style("background", "000000")
       .on("click", function() { zoom(root); });
 
   zoomTo([root.x, root.y, root.r * 2 + margin]);
@@ -267,7 +309,10 @@ $("body").on("click", ".filter-button", function() {
   else{
     prepAndRenderChart("");
   }
- 
+});
+
+$("body").on("click", ".filter-clear-button", function() {
+    prepAndRenderChart("");
 });
 
 prepAndRenderChart("");

@@ -1,8 +1,8 @@
 {
-  "name": "flare",
+  "name": "root",
   "children": [
     {
-      "name": "bunch of wills",
+      "name": "cluster1",
       "children": [
         {
           "name": "city",
@@ -37,7 +37,6 @@
         }
       ]
     },
-
     {
       "name": "cluster2",
       "children": [

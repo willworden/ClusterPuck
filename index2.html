@@ -36,8 +36,17 @@
 }
 
 </style>
-<body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<body>
+  <div class="filter-container">
+    Filter by: <input class="filter-text" type="text"></input>
+    <input class="filter-button" type="button" value="Submit" />
+  </div>
+  <div class="chart-container"></div>
+</body>
+
 <script>
 
 var margin = 20,
@@ -53,14 +62,16 @@ var pack = d3.layout.pack()
     .size([diameter - margin, diameter - margin])
     .value(function(d) { return d.size; })
 
-var svg = d3.select("body").append("svg")
-    .attr("width", diameter)
-    .attr("height", diameter)
-  .append("g")
-    .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+var url = "flare3.js"; //"http://localhost:3000/data/demo.json";
 
-d3.json("flare3.js", function(error, root) {
-  if (error) return console.error(error);
+function renderChart(root) {
+  d3.select("svg").remove();
+
+  var svg = d3.select(".chart-container").append("svg")
+      .attr("width", diameter)
+      .attr("height", diameter)
+    .append("g")
+      .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
   var focus = root,
       nodes = pack.nodes(root),
@@ -85,7 +96,7 @@ d3.json("flare3.js", function(error, root) {
 
   var node = svg.selectAll("circle,text");
 
-  d3.select("body")
+  d3.select(".chart-container")
       .style("background", color(-1))
       .on("click", function() { zoom(root); });
 
@@ -113,8 +124,76 @@ d3.json("flare3.js", function(error, root) {
     node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
     circle.attr("r", function(d) { return d.r * k; });
   }
-});
+};
+
+function prepAndRenderChart(filters){
+  $.getJSON( url, function( data ) {
+    console.log(filters);
+    if (filters && filters.length > 0 ){
+     renderChart(prepData(data, filters));
+     return;
+    }
+
+    renderChart(data);
+  });
+}
+
+function prepData(data, filters){
+  var matchedClusters = [];
+
+  if(data.children) {
+     data.children.forEach(function(cluster) {
+       var isMatch = false;
+
+       if(cluster.children) {
+          for(var i = 0; i < cluster.children.length; i++)
+          {
+            var variable = cluster.children[i];
+             isMatch = isMatchFilter(variable, filters);
+             if(isMatch)
+               break;            
+          }
+       }
+
+       if(isMatch)
+       {
+         console.log(cluster.name + " is a match");
+         matchedClusters.push(cluster);
+       }
+     });
+  }
+
+   data.children = matchedClusters;
+   console.log("Data is now ");
+   console.log(data);
+   return data;
+}
+
+function isMatchFilter(variable, filters) {
+  for(var i = 0; i < filters.length; i++)
+  {
+    var f = filters[i];
+    if(variable.name.toLowerCase() == f.toLowerCase())
+      return true;
+  }
+  return false;
+}
 
 d3.select(self.frameElement).style("height", diameter + "px");
+
+$(".filter-button").on("click", function() {
+  var filterText = $(".filter-text").val();
+  var values = filterText.split(",");
+  console.log(values);
+  if(values.length>0 && values[0] != ""){
+    console.log("rendering filters");
+    prepAndRenderChart(values);
+  }
+  else{
+    prepAndRenderChart("");
+  }
+});
+
+prepAndRenderChart();
 
 </script>

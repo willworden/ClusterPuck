@@ -2,10 +2,6 @@
 <meta charset="utf-8">
 <style>
 
-body {
-  text-align: center;
-}
-
 .node {
   cursor: pointer;
 }
@@ -17,33 +13,6 @@ body {
 
 .node--leaf {
   fill: white;
-}
-
-.filter-container{
-
-  margin: 0 auto;
-  font: 20px "Helvetica Neue", Helvetica, Arial, sans-serif;
-  text-anchor: middle;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
-  height:auto;
-  display:inline-block;
-  border: 2px solid #ccc;
-  padding: 4px 10px 4px 10px;
-}
-
-.filter-container input[type="checkbox"] {
-  margin-left: 18px;
-  display: inline-block;
-}
-
-.filter-button, .filter-clear-button {
-  margin-left: 20px;
-  display: inline-block;  
-   font: 18px "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-.filter-clear-button {
-  margin-left: 6px;
 }
 
 .label {
@@ -68,27 +37,29 @@ body {
 
 </style>
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<<<<<<< HEAD
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
 <body>
   <div class="filter-container">
-
+    Filter by: <input class="filter-text" type="text"></input>
+    <input class="filter-button" type="button" value="Submit" />
   </div>
   <div class="chart-container"></div>
 </body>
 
+=======
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+>>>>>>> 0e982747528c1bc3f41488804307ea23807de006
 <script>
 
 var margin = 20,
     diameter = 960,
     format = d3.format(",d");
 
-var screenWidth = $(window).width()-50;
-
 var color = d3.scale.linear()
     .domain([-1, 5])
-    .range(["hsl(180,80%,80%)", "hsl(228,30%,40%)"])
+    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
     .interpolate(d3.interpolateHcl);
 
 var pack = d3.layout.pack()
@@ -98,55 +69,14 @@ var pack = d3.layout.pack()
 
 var url = "flare3.js"; //"http://localhost:3000/data/demo.json";
 
-function buildMenu(root){
-  var form = document.createElement("div");
-  var dictionary={};
-  var clusters = root.children;
-  clusters.forEach(function (cluster){
-    cluster.children.forEach(function(variable){
-        dictionary[variable.name] = variable.name;
-      });
-
-  });
-  for(key in dictionary){
-    var menuBox = document.createElement("input");
-    var label = document.createElement("label");
-    menuBox.type="checkbox";
-    menuBox.id="checkbox_for_"+key
-    menuBox.value=key;
-    label.setAttribute("for", "checkbox_for_"+key);
-    label.innerHTML = key;
-    form.appendChild(menuBox);
-    form.appendChild(label);
-
-  }
-
-  var button = document.createElement("button");
-  button.className ="filter-button";
-  button.innerHTML="submit";
-  form.appendChild(button)
-
-  var clearButton = document.createElement("button");
-  clearButton.className ="filter-clear-button";
-  clearButton.innerHTML="clear";
-  form.appendChild(clearButton)
-
-  $(".filter-container div").remove();
-  $(".filter-container").append(form);
-}
-
 function renderChart(root) {
- // console.log(root);
-
   d3.select("svg").remove();
 
-  var svgWidth = (diameter > screenWidth ? diameter : screenWidth );
-
   var svg = d3.select(".chart-container").append("svg")
-      .attr("width", svgWidth)
+      .attr("width", diameter)
       .attr("height", diameter)
     .append("g")
-      .attr("transform", "translate(" + svgWidth / 2 + "," + diameter / 2 + ")");
+      .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
   var focus = root,
       nodes = pack.nodes(root),
@@ -174,7 +104,7 @@ function renderChart(root) {
   var node = svg.selectAll("circle,text");
 
   d3.select(".chart-container")
-      .style("background", "000000")
+      .style("background", color(-1))
       .on("click", function() { zoom(root); });
 
   zoomTo([root.x, root.y, root.r * 2 + margin]);
@@ -198,60 +128,27 @@ function renderChart(root) {
 
   function zoomTo(v) {
     var k = diameter / v[2]; view = v;
-    node.transition().delay(250).duration(700).attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
     circle.attr("r", function(d) { return d.r * k; });
   }
+<<<<<<< HEAD
 };
-
-function wrap(text) {
-  text.each(function() {
-    var text = d3.select(this),
-        textSize = textWidth(text.text().split(/<br>/)[0]),
-        words = text.text().split(/<br>/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 0.5, // ems
-        y = text.attr("y"),
-        dy = parseFloat(text.attr("dy")),
-        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");     
-    while (word = words.pop()) {
-      line.push(word);
-      tspan.text(line.join(" "));
-      if (tspan.node().getComputedTextLength() > textSize) {
-        line.pop();
-        tspan.text(line.join(" "));
-        line = [word];
-        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-      }
-    }
-  });
-};
-
-function textWidth(text) {
-   var dummyHtmlElem = '<span style="display:none">' + text + '</span>';
-   $('body').append(dummyHtmlElem);
-   var width = $('body').find('span:last').width();
-   $('body').find('span:last').remove();
-   return width;
-};
-
 
 function prepAndRenderChart(filters){
   $.getJSON( url, function( data ) {
- //   console.log(filters);
+    console.log(filters);
     if (filters && filters.length > 0 ){
      renderChart(prepData(data, filters));
      return;
     }
-    buildMenu(data);
+
     renderChart(data);
   });
 }
 
 function prepData(data, filters){
   var matchedClusters = [];
- // console.log("filters:" + filters);
+
   if(data.children) {
      data.children.forEach(function(cluster) {
        var isMatch = false;
@@ -268,7 +165,7 @@ function prepData(data, filters){
 
        if(isMatch)
        {
-        // console.log(cluster.name + " is a match");
+         console.log(cluster.name + " is a match");
          matchedClusters.push(cluster);
        }
      });
@@ -289,21 +186,53 @@ function isMatchFilter(variable, filters) {
   }
   return false;
 }
+=======
+
+  // ################ custom functions ####################
+  function wrap(text) {
+    text.each(function() {
+      var text = d3.select(this),
+          textSize = textWidth(text.text().split(/<br>/)[0]),
+          words = text.text().split(/<br>/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 0.5, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");     
+      while (word = words.pop()) {
+        line.push(word);
+        tspan.text(line.join(" "));
+        if (tspan.node().getComputedTextLength() > textSize) {
+          line.pop();
+          tspan.text(line.join(" "));
+          line = [word];
+          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+        }
+      }
+    });
+  };
+
+  function textWidth(text) {
+     var dummyHtmlElem = '<span style="display:none">' + text + '</span>';
+     $('body').append(dummyHtmlElem);
+     var width = $('body').find('span:last').width();
+     $('body').find('span:last').remove();
+     return width;
+  };
+  // ################ custom functions ####################
+});
+>>>>>>> 0e982747528c1bc3f41488804307ea23807de006
 
 d3.select(self.frameElement).style("height", diameter + "px");
 
-$("body").on("click", ".filter-button", function() {
-  var checked = $( "input:checked" );
-  var values = [];
-  checked.each(function(i) {
-     values.push($(this).val());
-  });
-
-  //console.log(values);
- // values = values.substring(0, values.length - 1);
-
+$(".filter-button").on("click", function() {
+  var filterText = $(".filter-text").val();
+  var values = filterText.split(",");
+  console.log(values);
   if(values.length>0 && values[0] != ""){
-   // console.log("rendering filters");
+    console.log("rendering filters");
     prepAndRenderChart(values);
   }
   else{
@@ -311,10 +240,6 @@ $("body").on("click", ".filter-button", function() {
   }
 });
 
-$("body").on("click", ".filter-clear-button", function() {
-    prepAndRenderChart("");
-});
-
-prepAndRenderChart("");
+prepAndRenderChart();
 
 </script>

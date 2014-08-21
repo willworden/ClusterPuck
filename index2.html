@@ -177,7 +177,7 @@ function renderChart(root) {
       .style("background", "000000")
       .on("click", function() { zoom(root); });
 
-  zoomTo([root.x, root.y, root.r * 2 + margin]);
+  zoomTo([root.x, root.y, root.r * 2 + margin], true);
 
   function zoom(d) {
     var focus0 = focus; focus = d;
@@ -196,9 +196,14 @@ function renderChart(root) {
         .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
   }
 
-  function zoomTo(v) {
+  function zoomTo(v, isNew) {
     var k = diameter / v[2]; view = v;
-    node.transition().delay(250).duration(700).attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+    
+    if(isNew)
+      node.transition().delay(250).duration(700).attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+    else
+      node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+
     circle.attr("r", function(d) { return d.r * k; });
   }
 };

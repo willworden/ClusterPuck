@@ -190,7 +190,11 @@ function renderChart(root) {
         html: true, 
         title: function() {
           var d = this.__data__, c = colors(d.i);
-          return '<span class="label-tip">' + d.name + '</span>'; 
+          var tooltipText = "";
+
+          if (d.name !== "undefined") { tooltipText += d.name + "<br>"; }
+          if (d.description) { tooltipText += d.description; }
+          return '<span class="label-tip">' + tooltipText + '</span>'; 
         }
       });
 
@@ -229,7 +233,6 @@ function renderChart(root) {
         while (word = words.pop()) {
           line.push(word);
           tspan.text(line.join(" "));
-          console.log(tspan.node().getComputedTextLength());
           if (tspan.node().getComputedTextLength() > textSize) {
             line.pop();
             tspan.text(line.join(" "));

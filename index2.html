@@ -50,7 +50,10 @@ body {
   font: 20px "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-anchor: middle;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
 
+.label-tip {
+  font: 20px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .label--leaf {
@@ -187,7 +190,7 @@ function renderChart(root) {
         html: true, 
         title: function() {
           var d = this.__data__, c = colors(d.i);
-          return '<span style="color:' + c + '">' + d.name + '</span>'; 
+          return '<span class="label-tip">' + d.name + '</span>'; 
         }
       });
 
